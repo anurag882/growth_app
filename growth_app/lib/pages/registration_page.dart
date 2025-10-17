@@ -1,32 +1,4 @@
 import 'package:flutter/material.dart';
-import 'pages/login_page.dart';
-import 'pages/registration_page.dart';
-import 'pages/home_page.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Growth App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true,
-      ),
-      initialRoute: '/login',
-      routes: {
-        '/login': (context) => const LoginPage(),
-        '/register': (context) => const RegistrationPage(),
-        '/home': (context) => const HomePage(),
-      },
-    );
-  }
-}
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
@@ -66,6 +38,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
             backgroundColor: Colors.green,
           ),
         );
+        // Navigate back to login page
+        Navigator.of(context).pop();
       }
     } catch (e) {
       if (mounted) {
@@ -150,6 +124,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Text('Register'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Already have an account? Login'),
             ),
           ],
         ),

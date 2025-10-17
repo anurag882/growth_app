@@ -1,56 +1,26 @@
 import 'package:flutter/material.dart';
-import 'pages/login_page.dart';
-import 'pages/registration_page.dart';
-import 'pages/home_page.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Growth App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true,
-      ),
-      initialRoute: '/login',
-      routes: {
-        '/login': (context) => const LoginPage(),
-        '/register': (context) => const RegistrationPage(),
-        '/home': (context) => const HomePage(),
-      },
-    );
-  }
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class RegistrationPage extends StatefulWidget {
-  const RegistrationPage({super.key});
-
-  @override
-  State<RegistrationPage> createState() => _RegistrationPageState();
-}
-
-class _RegistrationPageState extends State<RegistrationPage> {
+class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
 
   @override
   void dispose() {
-    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  Future<void> _register() async {
+  Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
@@ -59,13 +29,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
       // Simulate network delay
       await Future.delayed(const Duration(milliseconds: 500));
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Welcome ${_nameController.text}! Registration successful.'),
-            backgroundColor: Colors.green,
-          ),
-        );
+      // For demo purposes, let's check if email/password match any registered user
+      // In a real app, this would be handled by a backend service
+      if (_emailController.text == 'test@example.com' && _passwordController.text == 'password123') {
+        if (mounted) {
+          // Navigate to home page and remove all previous routes
+          Navigator.of(context).pushReplacementNamed('/home');
+        }
+      } else {
+        throw Exception('Invalid email or password');
       }
     } catch (e) {
       if (mounted) {
@@ -87,27 +59,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Account'),
+        title: const Text('Login'),
       ),
       body: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            TextFormField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Full Name',
-                border: OutlineInputBorder(),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your name';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
             TextFormField(
               controller: _emailController,
               decoration: const InputDecoration(
@@ -134,22 +92,28 @@ class _RegistrationPageState extends State<RegistrationPage> {
               ),
               obscureText: true,
               validator: (value) {
-                if (value == null || value.length < 6) {
-                  return 'Password must be at least 6 characters';
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your password';
                 }
                 return null;
               },
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: _isLoading ? null : _register,
+              onPressed: _isLoading ? null : _login,
               child: _isLoading
                   ? const SizedBox(
                       height: 20,
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Register'),
+                  : const Text('Login'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/register');
+              },
+              child: const Text('Don\'t have an account? Register'),
             ),
           ],
         ),
